@@ -20,8 +20,9 @@ is a finding that has to be documented, not absorbed silently.
 ## Layout
 
 ```
-pipeline/     the study, stage by stage. Notebook exports, lightly cleaned.
-              These produced the reported results.
+notebooks/    the archived run with outputs. The evidential record; do not
+              re-execute or clear outputs.
+pipeline/     the same stages as scripts, driven by the Makefile.
 src/          library extracted from the pipeline: cost model, policies,
               simulator, metrics. Unit-tested. No I/O.
 tests/        pytest suite covering src/ only.
@@ -52,12 +53,18 @@ and must be done stage by stage with output diffs at each step.
 
 ## Known issues, already documented
 
-`docs/limitations.md` records four inconsistencies found in the pipeline: the
-two stages price cost differently, the winning policy is a heuristic and not
-the optimiser it is named after, the test period is unrepresentative, and
-stage 3 contains a silent fallback to synthetic predictions. Do not "fix"
-these quietly in a refactor. They are findings with a documented status, and
-changing them changes the reported results.
+`docs/limitations.md` records four defects: the two stages price cost
+differently, the winning policy is a heuristic and not the optimiser it is
+named after, the probabilities reaching the optimiser are uncalibrated (mean
+0.429 against a true 0.261), and three separate code paths can produce the
+prediction column without announcing which ran. Do not "fix" these quietly in
+a refactor. They are findings with a documented status, and changing them
+changes the reported results.
+
+Two markdown cells in `notebooks/04_simulate_and_validate.ipynb` are stale
+prose from an earlier run, annotated inline. The `.py` exports in `pipeline/`
+preserve that stale prose and drop the outputs that contradict it, so verify
+any claim against the notebooks rather than the scripts.
 
 ## What not to do
 

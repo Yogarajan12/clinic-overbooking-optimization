@@ -51,27 +51,68 @@ of parameters, not a validation. Re-running the simulation with the exact
 optimiser substituted for the heuristic is the first item in
 `docs/future-work.md`.
 
-### 3. The test period is not representative
+### 3. The probabilities driving the simulation are not calibrated
 
-The chronological split puts the last 14,392 appointments in the test set, and
-that period has a 43% no-show rate against 28.5% for the pooled cohort. The
-simulation's own law-of-large-numbers check confirms it: theoretical rate
-0.4295, simulated 0.4296.
+This is the most serious defect in the study, and the pipeline printed it at
+the time. Stage 3, when it generates predictions for the test split, reports:
 
-A baseline that never overbooks therefore wastes about 8.6 of 20 slots per
-session, which is what produces the $1,289 baseline cost and the 57%
-utilisation figure. On a 28.5% cohort the baseline is much less wasteful and
-the savings from overbooking shrink accordingly. The 64.5% figure is a
-property of this test period, not a general estimate of what overbooking buys.
+```
+✓ Loaded model type: stacking
+✓ Generated 14,392 predictions
+  Mean predicted P(no-show): 0.429
+  Actual no-show rate: 0.261
+```
 
-### 4. Stage 3 has a silent fallback
+The model claims an average no-show risk of 0.429 on a population whose true
+rate is 0.261. That is a 17 percentage point over-prediction, about 65% in
+relative terms, and it is the single quantity the entire decision layer
+integrates over.
 
-If the serialised model fails to load or predict, stage 3 catches the
-exception and generates probabilities from a hand-tuned heuristic built out of
-base rate, age, lead time, prior no-show rate and scholarship status. It then
-proceeds as though nothing happened. The heuristic produces a mean near the
-observed 0.43, so the printed calibration check passes either way, and the
-archived notebook output does not record which path ran.
+The likely mechanism is visible in stage 2. Every base learner is trained with
+`class_weight='balanced'` or `scale_pos_weight=2.38`, which shifts the
+effective prior from the observed base rate towards 0.5. Mapping a true rate of
+0.261 through a weight ratio of 2.38 gives roughly 0.46, which brackets the
+0.429 observed. Isotonic calibration was fitted and saved for each base model,
+but the artefact stage 3 loads is the stacking ensemble, so the calibration
+step the study relies on is bypassed at exactly the point where it matters.
+
+The consequence runs straight into the headline. Under a never-overbook
+baseline, idle slots scale directly with the no-show rate. At 0.429 the
+baseline wastes about 8.6 of 20 slots, which produces the $1,289 baseline cost
+and the 57% utilisation figure. At the true 0.261 it wastes about 5.2, and both
+the baseline cost and the savings measured against it shrink substantially.
+The optimal overbooking level moves with it, since k tracks expected no-shows.
+
+So the reported 64.5% is inflated in the direction that flatters the
+conclusion, by an amount that cannot be determined without re-running stages 3
+and 4 on properly calibrated probabilities. The qualitative finding that
+risk-aware policies beat flat-rate policies is not threatened by this, because
+every policy is evaluated on the same inflated inputs. The magnitude is.
+
+It also undercuts the study's own defence of a modest AUC. The argument was
+that the decision layer needs calibration rather than ranking. That argument
+holds, but the probabilities that reached the decision layer were not the
+calibrated ones.
+
+### 4. Three paths produce `pred_noshow_prob`, and none of them announce it
+
+Stage 3 resolves the prediction column in three ways, in order of precedence:
+
+1. a pre-existing `pred_noshow_prob` column in `data/processed/test_full.csv`,
+   which short-circuits before inference and is silent;
+2. inference from the loaded model, which is the path the archived run took;
+3. a hand-tuned fallback heuristic, reached when the model fails to load or
+   predict, built from base rate, age, lead time, prior no-show rate and
+   scholarship status, wrapped in a bare `except` that lets the run continue.
+
+The archived notebook records which path ran only because stage 3 happens to
+print the model type. Path 1 leaves no trace at all, and path 3 would produce
+a plausible-looking mean without any indication that no model was involved.
+
+A re-run should delete the fallback and let a load failure raise, assert that
+mean predicted risk tracks the observed rate within a stated tolerance, and
+fail loudly when it does not. The check that would have caught defect 3 above
+already exists as a print statement; it simply was not an assertion.
 
 Any re-run should remove the fallback and let the failure surface. Silent
 degradation to a heuristic is exactly the failure mode that makes deployed

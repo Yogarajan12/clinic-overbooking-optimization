@@ -16,10 +16,12 @@ heuristic, that is worth knowing and worth saying.
 Add an assertion that mean predicted risk tracks the observed rate within a
 stated tolerance, and fail the run when it does not.
 
-**Re-weight or re-sample the test period.** The test window sits at a 43%
-no-show rate. Reporting savings under a reweighted 28.5% cohort alongside the
-raw figure would separate what overbooking buys from what an unusual period
-buys.
+**Recalibrate before the optimiser sees the probabilities.** Stage 3 loads the
+stacking ensemble, which bypasses the per-model isotonic calibration, and the
+result is a mean predicted risk of 0.429 against a true 0.261. Fit calibration
+on the ensemble itself, re-run stages 3 and 4, and report the corrected
+savings. This is the change most likely to move the headline, and it should
+happen before the two items above.
 
 **Move fairness into the objective.** At present fairness is a post-hoc policy
 choice. The constrained solver already prices an overflow-probability cap, so

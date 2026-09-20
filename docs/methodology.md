@@ -27,9 +27,10 @@ same-day booking, leaving 71,959 appointments at a 28.5% no-show rate.
 The split is chronological rather than random: 43,175 train, 14,392
 validation, 14,392 test. Random splitting would let a patient's later
 behaviour inform the prediction of their earlier appointment, and it would
-flatter the model by hiding drift. The cost of doing it properly shows up in
-the test period's 43% no-show rate, which is discussed in
-`docs/limitations.md`.
+flatter the model by hiding drift. The test period's own no-show rate, 26.1%,
+sits close to the pooled 28.5%, so the split is not itself distorting. What
+does distort the downstream results is that the model predicts a mean risk of
+42.9% on that same period; see defect 3 in `docs/limitations.md`.
 
 Sixteen features survive. Lead time is the strongest single signal, rising
 from 21.4% no-show on same-day appointments to 34.1% beyond a month.

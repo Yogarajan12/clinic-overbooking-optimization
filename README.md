@@ -34,13 +34,19 @@ A 64.5% cost reduction, about $832 per session, roughly $598,000 across the
 **Read that number with three qualifications, all of them load-bearing.** It
 holds under a cost structure that prices idle clinician time at twice an
 overflow patient; invert that ratio and the ranking of policies inverts with
-it. It is measured on a test period with a 43% no-show rate against 28.5% for
-the pooled cohort, so the baseline it beats is unusually wasteful. And the
-policy that wins is a cost-ratio heuristic rather than the Poisson-Binomial
-optimiser the theory section develops. All three are documented in
-[`docs/limitations.md`](docs/limitations.md), along with a silent fallback in
-stage 3 that can substitute synthetic probabilities for model predictions
-without announcing it.
+it. The policy that wins is a cost-ratio heuristic rather than the
+Poisson-Binomial optimiser the theory section develops. And, most seriously,
+the probabilities driving the simulation average 0.429 against a true test-set
+no-show rate of 0.261, an over-prediction the pipeline printed and nobody
+acted on. Because idle cost scales directly with the no-show rate, that
+inflates the baseline this result is measured against, so the true saving is
+smaller than 64.5% by an amount only a re-run can establish.
+
+All three are documented in [`docs/limitations.md`](docs/limitations.md),
+along with the three separate code paths that can produce the prediction
+column without announcing which one ran. The archived notebooks under
+[`notebooks/`](notebooks/) carry the outputs these claims are checked against,
+so none of it has to be taken on trust.
 
 That section is the part of this repository worth reading first. A result that
 survives being described honestly is worth more than one that needs the
@@ -125,7 +131,7 @@ well.
 
 ![ROC curves on validation and test](docs/figures/09_roc_curves.png)
 
-What makes the study work anyway is that the decision layer does not need
+The intended argument is that the decision layer does not need
 ranking. It needs probabilities that are right on average at every risk level,
 because it integrates them directly to compute expected cost. A model that
 ranks beautifully but reports inflated probabilities would produce
@@ -139,7 +145,13 @@ calibration, not discrimination, is the property under test.
 regression in green pulls them back onto it.*
 
 Isotonic regression beats Platt scaling on Brier score for all four models, so
-it is what the pipeline uses.
+it is what the pipeline uses for the individual base learners.
+
+It is not, however, what reaches the optimiser. Stage 3 loads the stacking
+ensemble, which bypasses the per-model calibration, and prints the damage as it
+goes: mean predicted risk 0.429 against an actual test rate of 0.261. The
+argument in the paragraph above is sound and the pipeline does not honour it.
+See defect 3 in [`docs/limitations.md`](docs/limitations.md).
 
 ![Brier scores by calibration method](docs/figures/08_brier_scores_by_method.png)
 
@@ -374,8 +386,9 @@ print(cost_fn.expected_cost(1 - risk)["P_overflow"])   # service level at k = 0
 ## Layout
 
 ```
-pipeline/     the study, stage by stage; these scripts produced the
-              reported numbers
+notebooks/    the archived run with outputs intact: every number in this
+              README can be checked against them without re-running anything
+pipeline/     the same four stages as scripts, driven by the Makefile
 src/          tested library: cost model, policies, simulator, metrics
 tests/        31 unit tests covering the library
 config/       cost scenarios
