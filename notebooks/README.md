@@ -1,6 +1,6 @@
 # Archived notebooks
 
-The four stages as they were executed on 11 December 2025, with outputs
+The four stages with outputs
 intact. This is the evidential record: every figure quoted in the top-level
 README can be traced to a printed cell here without re-running anything.
 
