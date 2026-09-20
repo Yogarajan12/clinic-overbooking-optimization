@@ -131,6 +131,21 @@ well.
 
 ![ROC curves on validation and test](docs/figures/09_roc_curves.png)
 
+![Precision-recall curves on validation and test](docs/figures/10_precision_recall_curves.png)
+
+*The companion the ROC panel needs at this base rate. Average precision peaks
+at 0.371 on test against a 0.261 baseline, so the lift over chance is real and
+slim. That 0.261 is the actual test-set no-show rate, and it is the number the
+probabilities reaching stage 3 fail to match.*
+
+![Confusion matrices at default and tuned thresholds](docs/figures/11_confusion_matrices.png)
+
+*At the default 0.5 threshold the models barely commit to the positive class:
+XGBoost recovers 310 of 3,995 no-shows. Dropping the threshold to about 0.29
+lifts that to 2,501, and buys it with a large rise in false positives. Which
+of those errors a clinic would rather make is a scheduling question, not a
+modelling one.*
+
 The intended argument is that the decision layer does not need
 ranking. It needs probabilities that are right on average at every risk level,
 because it integrates them directly to compute expected cost. A model that
