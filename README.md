@@ -153,8 +153,7 @@ ranks beautifully but reports inflated probabilities would produce
 systematically wrong booking levels while looking excellent on AUC. So
 calibration, not discrimination, is the property under test.
 
-![Calibration curves for the tree models](docs/figures/06_calibration_rf_xgb.png)
-![Calibration curves for the linear and neural models](docs/figures/07_calibration_lr_nn.png)
+![Calibration curves for all four models](docs/figures/06_calibration_curves.png)
 
 *Uncalibrated predictions in red drift away from the diagonal. Isotonic
 regression in green pulls them back onto it.*
@@ -282,8 +281,12 @@ with a 11.5% overflow rate; `predictive_simple` gives up $119 per session to
 keep overflow at 5.3%. Which trade a clinic should take is not a question the
 optimiser can answer.*
 
-![Cost distributions, top policies](docs/figures/17_cost_distributions_top_policies.png)
-![Cost distributions, baseline comparison](docs/figures/18_cost_distributions_baseline.png)
+![Cost distributions for the top policies and the baseline](docs/figures/17_cost_distributions.png)
+
+*The baseline's distribution sits almost entirely to the right of the others,
+and it is wider: never overbooking is both more expensive and less
+predictable, because session cost then tracks attendance with nothing damping
+it.*
 
 ### The ranking is not stable, and that is the finding
 
@@ -307,11 +310,19 @@ underlying no-show rate, and degrade accuracy deliberately.
 ![Stress test heatmap](docs/figures/21_stress_test_heatmap.png)
 ![Policy robustness ranges](docs/figures/22_policy_robustness_range.png)
 
-Risk-aware policies hold up. Ten percent prediction noise moves cost by under
-one percent; twenty percent noise by under one percent as well. The advantage
-over flat-rate booking survives degradation that would make the model's
-point predictions useless, which is a direct consequence of the decision layer
-integrating over the distribution rather than acting on a threshold.
+Noise in the predictions barely registers. Adding 10% moves `cost_optimal`
+from $457.04 to $457.89, and the severe-degradation scenario leaves it at
+$458.18. That is a direct consequence of the decision layer summing
+probabilities across twenty patients: symmetric noise cancels in the sum, so
+the booking level hardly moves even when individual predictions are badly
+wrong.
+
+What does hurt is the no-show rate itself drifting. Thirty percent more
+no-shows than predicted pushes `cost_optimal` to $995.95, and the extreme
+scenario to $1,369.02, roughly three times baseline. The ordering survives
+throughout, with `cost_optimal` cheapest in seven of eight scenarios, but the
+lesson for deployment is that monitoring should watch the base rate rather
+than prediction quality.
 
 ### Who waits
 
@@ -332,6 +343,12 @@ damps overbooking in sessions dense with young or scholarship patients, which
 sounds right and is wrong. Because it also reduces overbooking where risk is
 highest, it shifts overflow *towards* older patients in the remaining sessions
 and widens the ratio it was built to close.
+
+![Cost against fairness disparity](docs/figures/24_cost_fairness_pareto.png)
+
+*Plotted against each other, the trade-off the fairness policies were supposed
+to buy does not exist. `predictive_simple` sits at the bottom left, cheapest
+and fairest; the two equity-aware rules sit above and to the right of it.*
 
 The lesson generalises past this dataset. A fairness intervention aimed at the
 decision rule, rather than at the mechanism generating the disparity, can move
@@ -420,7 +437,8 @@ refactoring must not move a number.
 ## Documentation
 
 - [Methodology](docs/methodology.md) — modelling choices and why each was made
-- [Limitations](docs/limitations.md) — four known inconsistencies, stated plainly
+- [Limitations](docs/limitations.md) — four defects, including an uncalibrated
+  decision layer, stated plainly
 - [Future work](docs/future-work.md) — ordered by how much each would change the conclusions
 
 ---
