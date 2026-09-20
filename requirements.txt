@@ -1,11 +1,10 @@
 # Pinned to the versions the reported results were produced under.
 #
-# These pins are incomplete, and the gap matters. shap's own dependencies are
-# not pinned here, so pip resolves numba and llvmlite freshly on every install.
-# As of September 2026 that selects an llvmlite with no wheel for this Python,
-# and the install fails outright unless cmake is on the path. Installing this
-# file as a whole is therefore not a reliable way to reconstruct the
-# environment.
+# These pins are incomplete. shap's own dependencies are not pinned here, so
+# pip resolves numba and llvmlite freshly on every install. Left unbounded,
+# that selected an llvmlite with no wheel and the install failed outright
+# unless cmake was on the path. The bound on numba below fixes the failure but
+# does not recover the versions actually used, which were never recorded.
 #
 # The numeric core below - numpy, pandas, scipy, PyYAML - is what the stage 3
 # and stage 4 results are computed from, and CI verifies the test suite against
@@ -17,6 +16,12 @@ scipy==1.13.1
 scikit-learn==1.5.0
 xgboost==2.0.3
 shap==0.45.1
+# Compatibility bound, not a provenance record: shap pulls numba, and an
+# unbounded resolve selects an llvmlite with no wheel and no cmake-free build.
+# This bound is the newest numba that still ships wheels here, verified to
+# resolve to numba 0.60.0 with llvmlite 0.43.0. It is not a claim about which
+# numba the reported results were produced under, which is not recorded.
+numba<0.61
 matplotlib==3.8.4
 seaborn==0.13.2
 joblib==1.4.2
