@@ -235,10 +235,6 @@ print("\n" + "=" * 80)
 print("GENERATING VISUALIZATIONS")
 print("=" * 80)
 
-# Create a figure directory
-import os
-os.makedirs('results/tables/results/figures/stage1/stage1', exist_ok=True)
-
 # 4.1 No-show rate by day of week
 print("\n4.1 Creating: No-show rate by day of week...")
 plt.figure(figsize=(10, 6))
@@ -705,9 +701,6 @@ print("4. Proceed to feature engineering and model building")
 
 
 print(f"✓ Date range: {df['AppointmentDay'].min().date()} to {df['AppointmentDay'].max().date()}")
-
-# Create figures directory for new visualizations
-os.makedirs('results/tables/results/figures/stage1/stage1', exist_ok=True)
 
 
 # **Age Decile Analysis**

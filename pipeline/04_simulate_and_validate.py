@@ -455,10 +455,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-# Create output directories
-os.makedirs('results/tables/tables', exist_ok=True)
-os.makedirs('results/tables/results/figures/stage1/stage4', exist_ok=True)
-
 # Set plotting style
 plt.rcParams['figure.figsize'] = (12, 6)
 plt.rcParams['font.size'] = 11

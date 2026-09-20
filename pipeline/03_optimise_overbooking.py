@@ -82,10 +82,6 @@ sns.set_style('whitegrid')
 plt.rcParams['figure.figsize'] = (12, 6)
 plt.rcParams['font.size'] = 10
 
-# Create output directories
-os.makedirs('results/tables/results/figures/stage1/stage3', exist_ok=True)
-os.makedirs('results/tables/stage3', exist_ok=True)
-
 
 # 1.1 Load the trained model and data
 print("\n--- 1.1 Loading Model and Data ---")

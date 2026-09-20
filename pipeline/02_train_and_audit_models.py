@@ -103,10 +103,6 @@ sns.set_style('whitegrid')
 plt.rcParams['figure.figsize'] = (12, 6)
 plt.rcParams['font.size'] = 10
 
-# Create output directories
-os.makedirs('results/tables/models', exist_ok=True)
-os.makedirs('results/tables/results/figures/stage1/stage2', exist_ok=True)
-
 
 # Load feature-engineered data
 
