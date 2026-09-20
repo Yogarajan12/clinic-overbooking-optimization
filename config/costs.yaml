@@ -1,0 +1,37 @@
+# Cost structure for the overbooking decision.
+#
+# Every headline number in this study is a function of these five values.
+# The default scenario prices idle clinician time at twice an overflow
+# patient, which is what pushes the optimiser towards aggressive overbooking.
+# Flip that ratio and a different policy wins; that is the finding of the
+# sensitivity analysis, not a failure of it.
+
+scenarios:
+
+  default:            # as used for the reported headline results
+    c_idle: 150.0     # $ per hour of idle clinician time
+    c_overflow: 75.0  # $ per overflowed patient
+    c_wait: 30.0      # $ per hour of patient waiting
+    service_time: 0.333   # hours per patient (20 minutes)
+    capacity: 20      # patients served per session
+
+  patient_centred:    # overflow priced above idle time
+    c_idle: 75.0
+    c_overflow: 150.0
+    c_wait: 30.0
+    service_time: 0.333
+    capacity: 20
+
+  balanced:           # equal weighting of the two failure modes
+    c_idle: 100.0
+    c_overflow: 100.0
+    c_wait: 30.0
+    service_time: 0.333
+    capacity: 20
+
+  high_overflow_penalty:   # safety-critical clinic
+    c_idle: 50.0
+    c_overflow: 200.0
+    c_wait: 45.0
+    service_time: 0.333
+    capacity: 20

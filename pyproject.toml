@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "noshow-overbooking"
+version = "1.0.0"
+description = "Calibrated no-show risk, cost-aware clinic overbooking, and a fairness audit of who bears the overflow"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Yogarajan Sivakumar" }]
+keywords = [
+  "healthcare", "no-show-prediction", "probability-calibration",
+  "interpretable-ml", "algorithmic-fairness", "operations-research",
+  "monte-carlo-simulation", "optimization",
+]
+classifiers = [
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.2",
+  "scipy>=1.13",
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+pipeline = [
+  "scikit-learn>=1.5",
+  "xgboost>=2.0",
+  "shap>=0.45",
+  "matplotlib>=3.8",
+  "seaborn>=0.13",
+  "joblib>=1.4",
+  "kagglehub>=0.3",
+]
+dev = ["pytest>=8.0", "ruff>=0.5"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["pipeline"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

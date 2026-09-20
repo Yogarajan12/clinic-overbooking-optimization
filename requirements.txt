@@ -1,0 +1,12 @@
+# Pinned to the versions the reported results were produced under.
+numpy==1.26.4
+pandas==2.2.2
+scipy==1.13.1
+scikit-learn==1.5.0
+xgboost==2.0.3
+shap==0.45.1
+matplotlib==3.8.4
+seaborn==0.13.2
+joblib==1.4.2
+PyYAML==6.0.1
+kagglehub==0.3.6

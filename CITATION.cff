@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Clinic Overbooking with No-Show Prediction: Calibrated Risk, Cost-Aware Optimisation, and a Fairness Audit"
+authors:
+  - family-names: Sivakumar
+    given-names: Yogarajan
+version: 1.0.0
+date-released: 2025-12-15
+license: MIT
+repository-code: "https://github.com/Yogarajan12/clinic-overbooking-optimization"
+abstract: >-
+  A four-stage study pairing interpretable machine learning with operations
+  research on the Kaggle Medical Appointment No-Shows dataset. Isotonic-calibrated
+  no-show risk feeds a Poisson-Binomial overbooking cost model solved under an
+  overflow-probability constraint, validated by Monte Carlo simulation across
+  twelve scheduling policies and audited for who bears the resulting overflow.
+keywords:
+  - no-show prediction
+  - probability calibration
+  - interpretable machine learning
+  - algorithmic fairness
+  - operations research
+  - Monte Carlo simulation
