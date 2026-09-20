@@ -29,3 +29,32 @@ jobs:
 
       - name: Test
         run: python -m pytest
+
+  # The job above resolves dependencies freshly, which catches breakage from new
+  # releases early. It does not exercise the versions the reported numbers were
+  # produced under: the Monte Carlo and bootstrap both draw from
+  # numpy.random.default_rng, whose stream NumPy does not guarantee across
+  # versions. This job pins the numeric core so that drift there surfaces as a
+  # CI failure rather than as a quietly different headline figure.
+  #
+  # The pins are listed inline because requirements.txt no longer resolves as a
+  # whole; see the note at the top of that file.
+  pinned:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+
+      - name: Install the pinned numeric core
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy==1.26.4 pandas==2.2.2 scipy==1.13.1 \
+            PyYAML==6.0.1 pytest==8.2.2
+          python -m pip install -e . --no-deps
+
+      - name: Test
+        run: python -m pytest

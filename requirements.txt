@@ -1,4 +1,16 @@
 # Pinned to the versions the reported results were produced under.
+#
+# These pins are incomplete, and the gap matters. shap's own dependencies are
+# not pinned here, so pip resolves numba and llvmlite freshly on every install.
+# As of September 2026 that selects an llvmlite with no wheel for this Python,
+# and the install fails outright unless cmake is on the path. Installing this
+# file as a whole is therefore not a reliable way to reconstruct the
+# environment.
+#
+# The numeric core below - numpy, pandas, scipy, PyYAML - is what the stage 3
+# and stage 4 results are computed from, and CI verifies the test suite against
+# exactly those four pins. The stage 1 and stage 2 model stack is recorded here
+# for provenance but is not verified anywhere.
 numpy==1.26.4
 pandas==2.2.2
 scipy==1.13.1
