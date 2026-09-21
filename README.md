@@ -427,12 +427,12 @@ config/       cost scenarios
 docs/         methodology, limitations, future work, figures
 data/         gitignored; stage 1 populates it
 results/      gitignored; stages 1 to 4 populate it
+report/       has considerable analysis and insights, some of which are not shown here
 ```
 
 `pipeline/` and `src/` overlap deliberately: the pipeline is preserved as it
 ran, for provenance, and the library is the tested extraction of its decision
-layer. [`CLAUDE.md`](CLAUDE.md) records the conventions and the rule that
-refactoring must not move a number.
+layer.
 
 ## Documentation
 
